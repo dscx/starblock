@@ -1,0 +1,18 @@
+<WALLET_ADRESS>:${new Date().getTime().toString().slice(0,-3)}:starRegistry;
+
+
+"star": {
+         "dec": "68° 52' 56.9",
+         "ra": "16h 29m 1.0s",
+         "story": "Testing the story 4"
+     }
+
+
+wallet address, message, signature and the star object (above)
+
+
+1. genesis block
+2. signing
+3. verify timestamp is under 5 min between ownership and submit
+4. add to block
+5. retrieve block in human readable way
