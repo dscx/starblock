@@ -71,9 +71,15 @@ class Blockchain {
             block.previousBlockHash = this.chain[this.chain.length-1].hash
           }
           block.hash = SHA256(JSON.stringify(block)).toString()
-          self.chain.push(block)
-          self.height = self.chain.length
-          resolve(block)
+          block.validate().then(valid => {
+            if(valid){
+              self.chain.push(block)
+              self.height = self.chain.length
+              return resolve(block)
+            } else {
+              return reject('Error adding block!')
+            }
+          })
         });
     }
 
@@ -180,6 +186,7 @@ class Blockchain {
             self.chain.filter(block => {
               const data = block.getBData()
               const match = data.owner === address
+              block.data = data
               if(match) stars.push(block)
             })
             return resolve(stars)
@@ -198,10 +205,9 @@ class Blockchain {
     validateChain() {
         let self = this;
         let errorLog = [];
-        var prevHash = ''
+        var prevHash = null
         return new Promise(async (resolve, reject) => {
             self.chain.forEach(block => {
-              block.getBData().then(data => {
                 block.validate().then(isValid => {
                   if(isValid){
                     if(prevHash) {
@@ -214,7 +220,6 @@ class Blockchain {
                   })
                   prevHash = data.hash
                 })
-            })
             return resolve(errorLog)
         });
     }
