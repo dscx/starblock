@@ -186,8 +186,7 @@ class Blockchain {
             self.chain.filter(block => {
               const data = block.getBData()
               const match = data.owner === address
-              block.data = data
-              if(match) stars.push(block)
+              if(match) stars.push(data)
             })
             return resolve(stars)
           } catch {
@@ -207,7 +206,7 @@ class Blockchain {
         let errorLog = [];
         var prevHash = null
         return new Promise(async (resolve, reject) => {
-            self.chain.forEach(block => {
+           await self.chain.forEach(block => {
                 block.validate().then(isValid => {
                   if(isValid){
                     if(prevHash) {
