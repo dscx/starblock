@@ -205,15 +205,15 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-           await self.chain.forEach(block => {
-                block.validate().then(isValid => {
+          await self.chain.forEach(block => {
+               block.validate().then(isValid => {
                   if(isValid){
                      } else {
                       errorLog.push(block)
                     }
                   })
-                  prevHash = block.hash
                 })
+                console.log(errorLog)
                 if(errorLog.length === 0) {
                   return resolve(true)
                 } else {
