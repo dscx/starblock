@@ -204,22 +204,21 @@ class Blockchain {
     validateChain() {
         let self = this;
         let errorLog = [];
-        var prevHash = null
         return new Promise(async (resolve, reject) => {
            await self.chain.forEach(block => {
                 block.validate().then(isValid => {
                   if(isValid){
-                    if(prevHash) {
-                      if(data.previousBlockHash !== prevHash)
-                        errorLog.push(block)
-                      }
-                    } else {
+                     } else {
                       errorLog.push(block)
                     }
                   })
-                  prevHash = data.hash
+                  prevHash = block.hash
                 })
-            return resolve(errorLog)
+                if(errorLog.length === 0) {
+                  return resolve(true)
+                } else {
+                  return reject(false)
+                }
         });
     }
 
