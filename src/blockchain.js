@@ -71,7 +71,8 @@ class Blockchain {
             block.previousBlockHash = this.chain[this.chain.length-1].hash
           }
           block.hash = SHA256(JSON.stringify(block)).toString()
-          block.validate().then(valid => {
+         const valid = await self.validateChain()
+         console.log(valid, 'is aliadaS?D??')
             if(valid){
               self.chain.push(block)
               self.height = self.chain.length
@@ -80,7 +81,6 @@ class Blockchain {
               return reject('Error adding block!')
             }
           })
-        });
     }
 
     /**
@@ -182,7 +182,6 @@ class Blockchain {
         let stars = [];
         return new Promise((resolve, reject) => {
           try {
-
             self.chain.filter(block => {
               const data = block.getBData()
               const match = data.owner === address
@@ -204,22 +203,26 @@ class Blockchain {
     validateChain() {
         let self = this;
         let errorLog = [];
-        return new Promise(async (resolve, reject) => {
-          await self.chain.forEach(block => {
-               block.validate().then(isValid => {
-                  if(isValid){
-                     } else {
-                      errorLog.push(block)
-                    }
-                  })
-                })
-                console.log(errorLog)
-                if(errorLog.length === 0) {
-                  return resolve(true)
-                } else {
-                  return reject(false)
+        let promiseArray = [];
+
+        if (self.chain.length === 0) return true
+        self.chain.forEach(block => {
+          const p = new Promise(async (resolve, reject) => {
+            block.validate().then(isValid => {
+              if(isValid){
+                resolve(true)
+                 } else {
+                  errorLog.push({error: 'Invalid block!'})
+                  reject(false)
                 }
-        });
+              })
+            })
+            promiseArray.push(p)
+          })
+          console.log('end', promiseArray)
+          return Promise.all(promiseArray).then((blocks) => {
+            return errorLog.length === 0
+          })
     }
 
 }
